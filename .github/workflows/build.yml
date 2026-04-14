@@ -2,10 +2,10 @@ name: Build TouchBlocker APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ master ]
   pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [ master ]
+  workflow_dispatch:     # 允许手动触发
 
 jobs:
   build:
@@ -20,15 +20,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: gradle
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 清理 + 构建 Debug APK
+      # 构建 Debug 版本（强烈推荐先用这个测试安装）
       - name: Build Debug APK
         run: ./gradlew :featureunlocker:assembleDebug --stacktrace
 
-      # 构建 Release APK（未签名）
+      # 构建 Release APK（未签名，仅用于测试）
       - name: Build Release APK
         run: ./gradlew :featureunlocker:assembleRelease --stacktrace
 
@@ -39,9 +40,9 @@ jobs:
           path: featureunlocker/build/outputs/apk/debug/featureunlocker-debug.apk
           if-no-files-found: error
 
-      - name: Upload Release APK
+      - name: Upload Release APK (unsigned)
         uses: actions/upload-artifact@v4
         with:
-          name: TouchBlocker-release
+          name: TouchBlocker-release-unsigned
           path: featureunlocker/build/outputs/apk/release/featureunlocker-release.apk
           if-no-files-found: error
