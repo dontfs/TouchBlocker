@@ -25,33 +25,29 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 构建 Debug 版本（两个 flavor 都会构建）
-      - name: Build Debug APKs
+      # 构建所有 Debug 版本
+      - name: Build All Debug APKs
         run: ./gradlew :app:assembleDebug --stacktrace
 
-      # 上传 Internal Debug（通常体积更小，推荐测试用）
-      - name: Upload Internal Debug APK
+      # 列出所有生成的 APK 文件，帮助我们看清楚实际路径和文件名
+      - name: List generated APK files
+        run: find app/build/outputs/apk -name "*.apk" | head -20 || echo "No APK found"
+
+      # 自动上传所有生成的 Debug APK
+      - name: Upload All Debug APKs
         uses: actions/upload-artifact@v4
         with:
-          name: TouchBlocker-internal-debug
-          path: app/build/outputs/apk/internal/debug/app-internal-debug.apk
+          name: TouchBlocker-debug-apks
+          path: app/build/outputs/apk/**/*.apk
           if-no-files-found: error
 
-      # 上传 Production Debug
-      - name: Upload Production Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: TouchBlocker-production-debug
-          path: app/build/outputs/apk/production/debug/app-production-debug.apk
-          if-no-files-found: error
-
-      # （可选）构建未签名的 Release 版本
-      - name: Build Release APKs
+      # （可选）构建 Release 版本
+      - name: Build All Release APKs
         run: ./gradlew :app:assembleRelease --stacktrace
 
-      - name: Upload Production Release (unsigned)
+      - name: Upload All Release APKs (unsigned)
         uses: actions/upload-artifact@v4
         with:
-          name: TouchBlocker-production-release-unsigned
-          path: app/build/outputs/apk/production/release/app-production-release.apk
+          name: TouchBlocker-release-unsigned
+          path: app/build/outputs/apk/**/*.apk
           if-no-files-found: warn
