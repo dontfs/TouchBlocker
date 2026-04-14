@@ -5,7 +5,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  workflow_dispatch:     # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build:
@@ -25,24 +25,24 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 构建 Debug 版本（强烈推荐先用这个测试安装）
+      # 构建 Debug APK（推荐先用这个，能直接安装）
       - name: Build Debug APK
-        run: ./gradlew :featureunlocker:assembleDebug --stacktrace
+        run: ./gradlew :app:assembleDebug --stacktrace
 
-      # 构建 Release APK（未签名，仅用于测试）
+      # 构建 Release APK（未签名）
       - name: Build Release APK
-        run: ./gradlew :featureunlocker:assembleRelease --stacktrace
+        run: ./gradlew :app:assembleRelease --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: TouchBlocker-debug
-          path: featureunlocker/build/outputs/apk/debug/featureunlocker-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
       - name: Upload Release APK (unsigned)
         uses: actions/upload-artifact@v4
         with:
           name: TouchBlocker-release-unsigned
-          path: featureunlocker/build/outputs/apk/release/featureunlocker-release.apk
+          path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
