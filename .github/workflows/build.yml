@@ -1,11 +1,11 @@
-name: Build Android APK
+name: Build TouchBlocker APK
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,37 +19,29 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'          # 大多数现代 Android 项目推荐 JDK 17 或 21
+          java-version: '17'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # 清理 + 构建 Debug APK
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew :featureunlocker:assembleDebug --stacktrace
 
+      # 构建 Release APK（未签名）
       - name: Build Release APK
-        run: ./gradlew assembleRelease --stacktrace
-
-      # 可选：如果你有 signing 配置，可以在这里签名 release 版本
-      # - name: Sign Release APK
-      #   uses: r0adkll/sign-android-release@v1
-      #   with:
-      #     releaseDirectory: app/build/outputs/apk/release
-      #     signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-      #     alias: ${{ secrets.KEY_ALIAS }}
-      #     keyPassword: ${{ secrets.KEY_PASSWORD }}
-      #     storePassword: ${{ secrets.STORE_PASSWORD }}
+        run: ./gradlew :featureunlocker:assembleRelease --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: TouchBlocker-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: featureunlocker/build/outputs/apk/debug/featureunlocker-debug.apk
           if-no-files-found: error
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: TouchBlocker-release
-          path: app/build/outputs/apk/release/app-release.apk
+          path: featureunlocker/build/outputs/apk/release/featureunlocker-release.apk
           if-no-files-found: error
