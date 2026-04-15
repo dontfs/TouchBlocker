@@ -59,6 +59,7 @@ class TouchBlockerAccessibilityService : AccessibilityService(), FloatingViewSta
   override fun onFloatingViewAdded() {
     windowManager.addView(backgroundView, backgroundViewLayoutParams)
     windowManager.addView(lockView, lockViewLayoutParams)
+    TouchBlockerTileService.requestTileUpdate(this)
   }
 
   override fun onFloatingViewRemoved() {
@@ -67,6 +68,7 @@ class TouchBlockerAccessibilityService : AccessibilityService(), FloatingViewSta
     lockView.resetAlpha()
     backgroundView.cancelToast()
     backgroundView.setHasShownToast(false)
+    TouchBlockerTileService.requestTileUpdate(this)
   }
 
   override fun onFloatingViewPermissionGranted() {
@@ -262,6 +264,7 @@ class TouchBlockerAccessibilityService : AccessibilityService(), FloatingViewSta
         )
       )
     }
+    TouchBlockerTileService.requestTileUpdate(this)
   }
 
   private val keepScreenOnStatusListener =
@@ -372,6 +375,7 @@ class TouchBlockerAccessibilityService : AccessibilityService(), FloatingViewSta
     unregisterReceiver(startBlockingTouchesBroadcastReceiver)
     unregisterReceiver(endBlockingTouchesBroadcastReceiver)
     unregisterReceiver(toggleBlockingTouchesBroadcastReceiver)
+    TouchBlockerTileService.requestTileUpdate(this)
   }
 
   private inner class BackgroundViewOnGestureListener : SimpleOnGestureListener() {
